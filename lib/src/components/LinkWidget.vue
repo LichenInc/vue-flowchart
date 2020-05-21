@@ -140,7 +140,8 @@
     					point.id = this.engine.UID();
     					this.link.points.splice(1,0,point);
     					// this.forceUpdate();
-    					this.newPoint(point.id);
+              this.newPoint(point.id);
+              event.stopPropagation();
     				},
           },
   			}))
