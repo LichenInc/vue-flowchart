@@ -2,7 +2,7 @@
 
   import { forEach, find } from 'lodash-es'
 
-  import nodeView from './NodeViewWidget.vue'
+  import nodeViewWidget from './NodeViewWidget.vue'
   import svgWidget from './SVGWidget.vue'
 
   import setState from '../../mixins/setState.js'
@@ -11,7 +11,7 @@
     name: "CanvasWidget",
     mixins: [setState],
     components: {
-      nodeView,
+      nodeViewWidget,
       svgWidget,
     },
     props: {
@@ -247,7 +247,7 @@
     @mousedown="onMouseDown"
     @mouseup="onMouseUp">
     <svg-widget :engine="engine" :new-point="newPoint"></svg-widget>
-    <node-view :engine="engine"></node-view>
+    <node-view-widget :engine="engine"></node-view-widget>
   </div>
 
 

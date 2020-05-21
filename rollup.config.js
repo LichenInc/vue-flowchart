@@ -1,9 +1,9 @@
-import babel from 'rollup-plugin-babel'
+import babel from '@rollup/plugin-babel'
 import vue from 'rollup-plugin-vue'
-import nodeResolve from 'rollup-plugin-node-resolve';
-import commonjs from 'rollup-plugin-commonjs';
+import nodeResolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 import scss from 'rollup-plugin-scss';
-import buble from 'rollup-plugin-buble';
+import buble from '@rollup/plugin-buble';
 
 export default {
   plugins: [
@@ -44,7 +44,7 @@ export default {
   ],
   format: 'umd',
   external: [
-    'vue',
+    'Vue',
   ],
   sourceMap: true,
 }
