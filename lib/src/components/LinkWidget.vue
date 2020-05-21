@@ -110,10 +110,9 @@
             'stroke-width': 20,
           },
     		},extraProps))
-
     		return h(
           'g',
-          { key: `link-${extraProps.id}` },
+          { key: `link-${extraProps.attrs.id}` },
           [
             Bottom,
             Top
