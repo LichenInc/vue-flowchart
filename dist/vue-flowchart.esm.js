@@ -4575,7 +4575,8 @@ var script$2 = {
     					point.id = this$1.engine.UID();
     					this$1.link.points.splice(1,0,point);
     					// this.forceUpdate();
-    					this$1.newPoint(point.id);
+              this$1.newPoint(point.id);
+              event.stopPropagation();
     				},
           },
   			}));
