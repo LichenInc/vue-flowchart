@@ -1,6 +1,6 @@
 {
   "name": "@gcorb/vueflowchart",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "vue-flowchart",
   "main": "dist/vue-flowchart.js",
   "module": "dist/vue-flowchart.esm.js",
