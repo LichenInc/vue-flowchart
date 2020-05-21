@@ -57,7 +57,7 @@
     "rollup-plugin-commonjs": "^7.0.0",
     "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-scss": "^0.2.0",
-    "rollup-plugin-vue": "2.3.1",
+    "rollup-plugin-vue": "5.1.7",
     "uglifyify": "^3.0.4",
     "vue": "2.6.11",
     "vue-hot-reload-api": "^2.3.4",

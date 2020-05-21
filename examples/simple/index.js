@@ -1,12 +1,6 @@
 import Vue from 'vue'
 
 //PLUGINS
-// const vm = new Vue({
-//   el: '#app',
-//   data: {
-//       currentActivity: 'home'
-//   }
-// })
 
 import app from './app.vue'
 
