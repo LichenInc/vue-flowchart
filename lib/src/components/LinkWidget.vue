@@ -136,12 +136,12 @@
           },
           on: {
             mousedown: (event) => {
-    					var point = this.engine.getRelativeMousePoint(event);
-    					point.id = this.engine.UID();
-    					this.link.points.splice(1,0,point);
+    					var point = this.engine.getRelativeMousePoint(event)
+    					point.id = this.engine.UID()
+    					this.link.points.splice(1,0,point)
     					// this.forceUpdate();
-              this.newPoint(point.id);
-              event.stopPropagation();
+              this.newPoint(point.id)
+              event.stopPropagation()
     				},
           },
   			}))
@@ -177,6 +177,7 @@
                 point.id = this.engine.UID()
                 this.link.points.splice(index+1,0,point)
                 this.newPoint(point.id)
+                event.stopPropagation()
               },
             },
   				})
