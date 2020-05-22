@@ -1,4 +1,4 @@
-import babel from '@rollup/plugin-babel'
+// import babel from '@rollup/plugin-babel'
 import vue from 'rollup-plugin-vue'
 import nodeResolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
@@ -9,13 +9,13 @@ export default {
   input:  'index.js',
   output: [
     {
-      file: 'dist/vue-flowchart.js',
+      file: 'dist/vueflowchart.js',
       format: 'umd',
       sourcemap: true,
       name: 'vueFlowchart'
     },
     {
-      file: 'dist/vue-flowchart.esm.js',
+      file: 'dist/vueflowchart.esm.js',
       format: 'es',
       sourcemap: true,
       name: 'vueFlowchart'
@@ -29,7 +29,7 @@ export default {
       css: false,
     }),
     scss({
-      output: 'dist/vue-flowchart.css',
+      output: 'dist/vueflowchart.css',
     }),
     // babel({
     //   exclude: ['node_modules/**', '*.vue'],

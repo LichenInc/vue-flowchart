@@ -1,9 +1,9 @@
 {
   "name": "@gcorb/vueflowchart",
-  "version": "0.1.4",
-  "description": "vue-flowchart",
-  "main": "dist/vue-flowchart.js",
-  "module": "dist/vue-flowchart.esm.js",
+  "version": "0.1.5",
+  "description": "vueflowchart",
+  "main": "dist/vueflowchart.js",
+  "module": "dist/vueflowchart.esm.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:umd": "rollup index.js -c --format umd --name 'vueFlowchart' --file dist/vue-flowchart.js",

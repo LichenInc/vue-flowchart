@@ -8,7 +8,17 @@
     },
     data() {
       return {
-        data: fixtureDatas(),
+        data: {
+          links: [
+            {id: '4474b70f-f4fa-47c7-9291-0750b8958abf', points: [{x: 123.90, y: 70}, {x: 9.49, y: 52}], source: '113f6315-e1b0-420c-9cbf-d5128206e94d', sourcePort: 'out', target: 'fccd3403-7bd6-4c7b-a172-ecaed9d746c5', targetPort: 'in'},
+            {id: 'd1b98e20-6b49-4785-8a6f-67d642f696e6', points: [{x: 97.85, y: 346}, {x: 9.49, y: 52}], source: 'fccd3403-7bd6-4c7b-a172-ecaed9d746c5', sourcePort: 'out', target: '113f6315-e1b0-420c-9cbf-d5128206e94d', targetPort: 'in'},
+            {id: 'a88bc563-22a0-4f2d-9c1c-be8f07312bd4', points: [{x: 97.87, y: 346}, {x: 9.49, y: 52}], source: 'fccd3403-7bd6-4c7b-a172-ecaed9d746c5', sourcePort: 'out', target: '113f6315-e1b0-420c-9cbf-d5128206e94d', targetPort: 'in'},
+          ],
+          nodes: [
+            { id: '113f6315-e1b0-420c-9cbf-d5128206e94d', type: 'default', x: -66, y: 2, data: { name: 'laurent fait un test', inPorts: ['in'], outPorts: ['out']}},
+            { id: 'fccd3403-7bd6-4c7b-a172-ecaed9d746c5', type: 'default', x: 111, y: 295, data: { name: '2 fds', inPorts: ['in'], outPorts: ['out']}}
+          ]
+        },
         // data: null,
         templates: [
           ['custom', customWidget],
