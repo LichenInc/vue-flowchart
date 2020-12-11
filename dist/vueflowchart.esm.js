@@ -13822,7 +13822,10 @@ function Engine() {
 				var ref = el.getBoundingClientRect();
 				var width = ref.width;
 				var height = ref.height;
-				return { width: width, height: height }
+				var bottom = ref.bottom;
+				var right = ref.right;
+				var top = ref.top;
+				return { width: width, height: height, bottom: bottom, right: right, top: top, styleTop: parseFloat(el.style.top.substring(0, el.style.top.length - 3)), styleBottom: parseFloat(el.style.left.substring(0, el.style.left.length - 3)) }
 			});
 			return dimensions
 		},
@@ -13862,6 +13865,52 @@ function Engine() {
 
 		setZoom: function(zoom){
 			this.state.zoom = zoom;
+			this.update();
+		},
+		
+		zoomIn: function () {
+			var val = this.state.zoom + 10;
+			this.state.zoom = val;
+		},
+
+		zoomOut: function () {
+			var val = this.state.zoom - 10;
+			this.state.zoom = val;
+		},
+
+		recenter: function () {
+			// this.setZoom(100);
+			var divstorm = window.document.getElementsByClassName('storm-flow-canvas');
+			// const nodeView = window.document.getElementsByClassName('node-view');
+			// const svgTranslate = divstorm[1];
+			var allNodes = Object.values(this.getNodeDimensions());
+			// const minTop = Math.min(...allNodes.map(n => n.styleTop))
+			// const minBottom = Math.min(...allNodes.map(n => n.bottom))
+			var maxBottom = Math.max.apply(Math, allNodes.map(function (n) { return n.bottom; }));
+			// const minRight = Math.min(...allNodes.map(n => n.right))
+			var maxRight = Math.max.apply(Math, allNodes.map(function (n) { return n.right; }));
+			// console.log('MIN B', minBottom)
+			// console.log('max b', maxBottom)
+			// console.log('min R', minRight)
+			// console.log('max r', maxRight)
+			// console.log('min top', minTop)
+			// Object.values(this.getNodeDimensions())
+			// const can = this.state.canvas.getBoundingClientRect();
+			// console.log('can', can)
+			// const x = can.clientWidth / can.scrollWidth;
+			// const y = can.clientHeight / can.scrollHeight;
+			// this.state.offsetX = divstorm[0].clientWidth / nombredeNode;
+			// this.state.offsetY = divstorm[0].clientHeight / nombredeNode;
+			var xFactor = divstorm[0].clientWidth / maxRight;
+			var yFactor =divstorm[0].clientHeight / maxBottom;
+			var zoomFac = xFactor < yFactor ? xFactor : yFactor;
+			// console.log('xfactor', xFactor)
+			// console.log('yFactor', yFactor)
+			// console.log('le zoom courant', this.state.zoom)
+			// console.log('calcul du zoom', 100 * zoomFac)
+			this.setZoom(100 * zoomFac);
+			this.state.offsetX = 100;
+			this.state.offsetY = 0;
 			this.update();
 		},
 
@@ -14217,6 +14266,9 @@ var script$7 = {
     removeLink: function removeLink(id) {
       this.engine.removeLink(id);
     },
+    recenter: function recenter() {
+      this.engine.recenter();
+    }
   },
   destroyed: function destroyed() {
     this.engine.removeListener(this._listenerID);

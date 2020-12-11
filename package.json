@@ -1,13 +1,13 @@
 {
-  "name": "@gcorb/vueflowchart",
-  "version": "0.1.5",
+  "name": "@gcorbel_4/vueflowchart",
+  "version": "1.0.3",
   "description": "vueflowchart",
   "main": "dist/vueflowchart.js",
   "module": "dist/vueflowchart.esm.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:umd": "rollup index.js -c --format umd --name 'vueFlowchart' --file dist/vue-flowchart.js",
-    "build:es": "rollup index.js -c --format es --name 'vueFlowchart' --file dist/vue-flowchart.esm.js",
+    "build:umd": "rollup index.js -c --format umd --name 'vueFlowchart' --file dist/vueflowchart.js",
+    "build:es": "rollup index.js -c --format es --name 'vueFlowchart' --file dist/vueflowchart.esm.js",
     "build": "npm run build:umd && npm run build:es",
     "serve": "NODE_PATH=$NODE_PATH:lib:examples/simple budo examples/simple/index.js --open -d . --live -- -t [ vueify ] -g babelify",
     "//dist": "NODE_PATH=$NODE_PATH:examples/simple browserify -e examples/simple/index.js -o dist/index.js -t vueify -t [ babelify ] -t uglifyify -p [ minifyify --no-map ]"

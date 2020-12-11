@@ -112,124 +112,127 @@
 
       },
       onMouseDown(event) {
+        if (event.which === 1) {
+          this.engine.setSelectedNode(null);
 
-        this.engine.setSelectedNode(null);
-
-        //look for a port
-        var element = event.target.closest('.port[data-name]');
-        if(element){
-          var nodeElement = event.target.closest('.node[data-nodeid]');
-          var node = this.engine.getNode(nodeElement.getAttribute('data-nodeid'))
-          var port = element.getAttribute('data-name')
-          var rel = this.engine.getRelativeMousePoint(event);
-          var id = this.engine.UID();
-
-          const x = this.engine.getPortCenter(node, port).x
-          const y = this.engine.getPortCenter(node, port).y
-          var FinalLink = this.engine.addLink({
-            source: nodeElement.dataset.nodeid,
-            sourcePort: element.dataset.name,
-            points:[{ x, y },{ x:rel.x, y:rel.y, id }]
-          });
-          this.selectedPointID = id
-          this.selectedLink = FinalLink
-          return;
-        }
-
-        //look for a point
-        element = event.target.closest('.point[data-id]');
-        if(element){
-          const id = element.getAttribute('data-id')
-          //chrome fix o_O
-          if(element.dataset === undefined){
-            element.dataset = {
-              id,
-              linkid: element.getAttribute('data-linkid')
-            };
-          }
-          const point = this.engine.getPoint(id)
-          this.setState({
-            initialX: event.pageX,
-            initialY: event.pageY,
-            initialObjectX: point.x,
-            initialObjectY: point.y,
-          })
-          this.selectedPointID = element.dataset.id
-          this.selectedLink = this.engine.getLink(element.dataset.linkid)
-          return
-        }
-
-        //look for an element
-        element = event.target.closest('.node[data-nodeid]');
-        if(element){
-          var model = this.engine.getNode(element.dataset['nodeid']);
-          this.engine.setSelectedNode(model);
-          this.setState({
-            selectedModel: model,
-            initialX: event.pageX,
-            initialY: event.pageY,
-            initialObjectX: model.x,
-            initialObjectY: model.y
-          });
-          return;
-        }
-
-        //probably just the canvas
-        this.setState({
-          initialX: event.pageX,
-          initialY: event.pageY,
-          initialObjectX: this.engine.state.offsetX,
-          initialObjectY: this.engine.state.offsetY
-        });
-      },
-      onMouseUp(event){
-        if(!this.selectedPointID) this.resetState()
-        if(this.selectedPointID){
-          const point = this.engine.getPoint(this.selectedPointID)
+          //look for a port
           var element = event.target.closest('.port[data-name]');
-          if(!element) this.resetState()
           if(element){
             var nodeElement = event.target.closest('.node[data-nodeid]');
+            var node = this.engine.getNode(nodeElement.getAttribute('data-nodeid'))
+            var port = element.getAttribute('data-name')
+            var rel = this.engine.getRelativeMousePoint(event);
+            var id = this.engine.UID();
 
-            //cant add link to self
-            if(this.selectedLink.source === nodeElement.dataset.nodeid){
-              this.engine.removeLink(this.selectedLink);
+            const x = this.engine.getPortCenter(node, port).x
+            const y = this.engine.getPortCenter(node, port).y
+            var FinalLink = this.engine.addLink({
+              source: nodeElement.dataset.nodeid,
+              sourcePort: element.dataset.name,
+              points:[{ x, y },{ x:rel.x, y:rel.y, id }]
+            });
+            this.selectedPointID = id
+            this.selectedLink = FinalLink
+            return;
+          }
+
+          //look for a point
+          element = event.target.closest('.point[data-id]');
+          if(element){
+            const id = element.getAttribute('data-id')
+            //chrome fix o_O
+            if(element.dataset === undefined){
+              element.dataset = {
+                id,
+                linkid: element.getAttribute('data-linkid')
+              };
             }
+            const point = this.engine.getPoint(id)
+            this.setState({
+              initialX: event.pageX,
+              initialY: event.pageY,
+              initialObjectX: point.x,
+              initialObjectY: point.y,
+            })
+            this.selectedPointID = element.dataset.id
+            this.selectedLink = this.engine.getLink(element.dataset.linkid)
+            return
+          }
 
-            //do the merge
-            else{
+          //look for an element
+          element = event.target.closest('.node[data-nodeid]');
+          if(element){
+            var model = this.engine.getNode(element.dataset['nodeid']);
+            this.engine.setSelectedNode(model);
+            this.setState({
+              selectedModel: model,
+              initialX: event.pageX,
+              initialY: event.pageY,
+              initialObjectX: model.x,
+              initialObjectY: model.y
+            });
+            return;
+          }
 
-              var nodeObject = this.engine.getNode(nodeElement.dataset.nodeid);
-              var NodeFactory = this.engine.getNodeFactory(nodeObject.type);
+          //probably just the canvas
+          this.setState({
+            initialX: event.pageX,
+            initialY: event.pageY,
+            initialObjectX: this.engine.state.offsetX,
+            initialObjectY: this.engine.state.offsetY
+          });
+        }
+      },
+      onMouseUp(event){
+        if (event.which === 1) {
+          if(!this.selectedPointID) this.resetState()
+          if(this.selectedPointID){
+            const point = this.engine.getPoint(this.selectedPointID)
+            var element = event.target.closest('.port[data-name]');
+            if(!element) this.resetState()
+            if(element){
+              var nodeElement = event.target.closest('.node[data-nodeid]');
 
-              //check if the port is allowed by using the factory
-              const isPortAllowed = NodeFactory.isPortAllowed(
-                this.engine.getNode(this.selectedLink.source),
-                this.selectedLink.sourcePort,
-                nodeObject,element.dataset.name)
+              //cant add link to self
+              if(this.selectedLink.source === nodeElement.dataset.nodeid){
+                this.engine.removeLink(this.selectedLink);
+              }
 
-              if (!isPortAllowed) this.resetState()
-              if (isPortAllowed) {
+              //do the merge
+              else{
 
-                this.engine.state.validators.onEdgeUpdate(this.selectedLink)
-                  .then((valid) => {
-                    if (valid) {
-                      this.selectedLink.target = nodeElement.dataset.nodeid;
-                      this.selectedLink.targetPort = element.dataset.name;
-                      this.engine.repaintNodes([nodeObject]);
+                var nodeObject = this.engine.getNode(nodeElement.dataset.nodeid);
+                var NodeFactory = this.engine.getNodeFactory(nodeObject.type);
 
-                      this.engine.fireEvent({
-                        type:'link:update',
-                        data: this.selectedLink,
-                      })
-                    } else {
-                      //revert position
-                      point.x = this.initialObjectX || point.x + 100
-                      point.y = this.initialObjectY || point.y + 100
-                      console.log(point);
-                    }
-                    this.resetState()
-                  })
+                //check if the port is allowed by using the factory
+                const isPortAllowed = NodeFactory.isPortAllowed(
+                  this.engine.getNode(this.selectedLink.source),
+                  this.selectedLink.sourcePort,
+                  nodeObject,element.dataset.name)
+
+                if (!isPortAllowed) this.resetState()
+                if (isPortAllowed) {
+
+                  this.engine.state.validators.onEdgeUpdate(this.selectedLink)
+                    .then((valid) => {
+                      if (valid) {
+                        this.selectedLink.target = nodeElement.dataset.nodeid;
+                        this.selectedLink.targetPort = element.dataset.name;
+                        this.engine.repaintNodes([nodeObject]);
+
+                        this.engine.fireEvent({
+                          type:'link:update',
+                          data: this.selectedLink,
+                        })
+                      } else {
+                        //revert position
+                        point.x = this.initialObjectX || point.x + 100
+                        point.y = this.initialObjectY || point.y + 100
+                        console.log(point);
+                      }
+                      this.resetState()
+                    })
+                }
               }
             }
           }
