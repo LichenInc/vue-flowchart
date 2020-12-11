@@ -90,6 +90,9 @@
       removeLink(id) {
         this.engine.removeLink(id)
       },
+      recenter() {
+        this.engine.recenter()
+      }
     },
     destroyed() {
       this.engine.removeListener(this._listenerID)

@@ -68,6 +68,16 @@
         const id = nodes[Math.round(Math.random(nodes.length - 1))]
         flowchart.removeNode(id)
       },
+      recenter () {
+        // on remets le zoom par défaut
+        this.$refs.flowchart.engine.recenter()
+      },
+      zoomIn () {
+        this.$refs.flowchart.engine.zoomIn()
+      },
+      zoomOut () {
+        this.$refs.flowchart.engine.zoomOut()
+      }
     },
   }
 
@@ -78,6 +88,9 @@
 div.scene
   button(type="button", @click="addNode") Add a node
   button(type="button", @click="removeRandomNode") Remove a node
+  button(type='button', @click='recenter') Recentrer le contenu
+  button(type='button', @click='zoomIn') zoomIn
+  button(type='button', @click='zoomOut') zoomOut
   vue-flowchart(
     ref="flowchart",
     :data="data",
