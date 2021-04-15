@@ -61,6 +61,7 @@
     },
     watch: {
       data: {
+        deep: true,
         handler() {
           this.initializeModel()
         }

@@ -2584,7 +2584,7 @@
   var getTag$1 = getTag;
 
   /** Built-in value references. */
-  var Uint8Array = root.Uint8Array;
+  var Uint8Array$1 = root.Uint8Array;
 
   /**
    * Creates a clone of `arrayBuffer`.
@@ -2595,7 +2595,7 @@
    */
   function cloneArrayBuffer(arrayBuffer) {
     var result = new arrayBuffer.constructor(arrayBuffer.byteLength);
-    new Uint8Array(result).set(new Uint8Array(arrayBuffer));
+    new Uint8Array$1(result).set(new Uint8Array$1(arrayBuffer));
     return result;
   }
 
@@ -2875,7 +2875,7 @@
 
       case arrayBufferTag$1:
         if ((object.byteLength != other.byteLength) ||
-            !equalFunc(new Uint8Array(object), new Uint8Array(other))) {
+            !equalFunc(new Uint8Array$1(object), new Uint8Array$1(other))) {
           return false;
         }
         return true;
@@ -4437,6 +4437,66 @@
       undefined
     );
 
+  function createCommonjsModule(fn, basedir, module) {
+  	return module = {
+  	  path: basedir,
+  	  exports: {},
+  	  require: function (path, base) {
+        return commonjsRequire(path, (base === undefined || base === null) ? module.path : base);
+      }
+  	}, fn(module, module.exports), module.exports;
+  }
+
+  function commonjsRequire () {
+  	throw new Error('Dynamic requires are not currently supported by @rollup/plugin-commonjs');
+  }
+
+  var rngBrowser = createCommonjsModule(function (module) {
+  // Unique ID creation requires a high quality random # generator.  In the
+  // browser this is a little complicated due to unknown quality of Math.random()
+  // and inconsistent support for the `crypto` API.  We do the best we can via
+  // feature-detection
+
+  // getRandomValues needs to be invoked in a context where "this" is a Crypto
+  // implementation. Also, find the complete implementation of crypto on IE11.
+  var getRandomValues = (typeof(crypto) != 'undefined' && crypto.getRandomValues && crypto.getRandomValues.bind(crypto)) ||
+                        (typeof(msCrypto) != 'undefined' && typeof window.msCrypto.getRandomValues == 'function' && msCrypto.getRandomValues.bind(msCrypto));
+
+  if (getRandomValues) {
+    // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
+    var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
+
+    module.exports = function whatwgRNG() {
+      getRandomValues(rnds8);
+      return rnds8;
+    };
+  } else {
+    // Math.random()-based (RNG)
+    //
+    // If all else fails, use Math.random().  It's fast, but is of unspecified
+    // quality.
+    var rnds = new Array(16);
+
+    module.exports = function mathRNG() {
+      for (var i = 0, r; i < 16; i++) {
+        if ((i & 0x03) === 0) { r = Math.random() * 0x100000000; }
+        rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
+      }
+
+      return rnds;
+    };
+  }
+  });
+
+  /**
+   * Convert array of 16 byte values to UUID string format of the form:
+   * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+   */
+  var byteToHex = [];
+  for (var i = 0; i < 256; ++i) {
+    byteToHex[i] = (i + 0x100).toString(16).substr(1);
+  }
+
   var script$2 = {
       name: "LinkWidget",
       props: {
@@ -4572,7 +4632,7 @@
 
     			paths.push(this.generateLink(h, {
             attrs: {
-              id: '0',
+              id: this.engine.UID(),
               d: (" M" + (this.getPoint(0).x) + " " + (this.getPoint(0).y) + " C" + (this.getPoint(0).x + margin) + " " + (this.getPoint(0).y) + " " + (this.getPoint(1).x-margin) + " " + (this.getPoint(1).y) + " " + (this.getPoint(1).x) + " " + (this.getPoint(1).y)),
             },
             on: {
@@ -4607,7 +4667,7 @@
     			paths = ds.map(function (data,index) {
     				return this$1.generateLink(h, {
               attrs: {
-                id:index,
+                id: this$1.engine.UID(),
       					'data-link': this$1.link.id,
       					'data-point': index,
                 d: data,
@@ -4872,126 +4932,128 @@
 
         },
         onMouseDown: function onMouseDown(event) {
+          if (event.which === 1) {
+            this.engine.setSelectedNode(null);
 
-          this.engine.setSelectedNode(null);
+            //look for a port
+            var element = event.target.closest('.port[data-name]');
+            if(element){
+              var nodeElement = event.target.closest('.node[data-nodeid]');
+              var node = this.engine.getNode(nodeElement.getAttribute('data-nodeid'));
+              var port = element.getAttribute('data-name');
+              var rel = this.engine.getRelativeMousePoint(event);
+              var id = this.engine.UID();
 
-          //look for a port
-          var element = event.target.closest('.port[data-name]');
-          if(element){
-            var nodeElement = event.target.closest('.node[data-nodeid]');
-            var node = this.engine.getNode(nodeElement.getAttribute('data-nodeid'));
-            var port = element.getAttribute('data-name');
-            var rel = this.engine.getRelativeMousePoint(event);
-            var id = this.engine.UID();
-
-            var x = this.engine.getPortCenter(node, port).x;
-            var y = this.engine.getPortCenter(node, port).y;
-            var FinalLink = this.engine.addLink({
-              source: nodeElement.dataset.nodeid,
-              sourcePort: element.dataset.name,
-              points:[{ x: x, y: y },{ x:rel.x, y:rel.y, id: id }]
-            });
-            this.selectedPointID = id;
-            this.selectedLink = FinalLink;
-            return;
-          }
-
-          //look for a point
-          element = event.target.closest('.point[data-id]');
-          if(element){
-            var id$1 = element.getAttribute('data-id');
-            //chrome fix o_O
-            if(element.dataset === undefined){
-              element.dataset = {
-                id: id$1,
-                linkid: element.getAttribute('data-linkid')
-              };
+              var x = this.engine.getPortCenter(node, port).x;
+              var y = this.engine.getPortCenter(node, port).y;
+              var FinalLink = this.engine.addLink({
+                source: nodeElement.dataset.nodeid,
+                sourcePort: element.dataset.name,
+                points:[{ x: x, y: y },{ x:rel.x, y:rel.y, id: id }]
+              });
+              this.selectedPointID = id;
+              this.selectedLink = FinalLink;
+              return;
             }
-            var point = this.engine.getPoint(id$1);
+
+            //look for a point
+            element = event.target.closest('.point[data-id]');
+            if(element){
+              var id$1 = element.getAttribute('data-id');
+              //chrome fix o_O
+              if(element.dataset === undefined){
+                element.dataset = {
+                  id: id$1,
+                  linkid: element.getAttribute('data-linkid')
+                };
+              }
+              var point = this.engine.getPoint(id$1);
+              this.setState({
+                initialX: event.pageX,
+                initialY: event.pageY,
+                initialObjectX: point.x,
+                initialObjectY: point.y,
+              });
+              this.selectedPointID = element.dataset.id;
+              this.selectedLink = this.engine.getLink(element.dataset.linkid);
+              return
+            }
+
+            //look for an element
+            element = event.target.closest('.node[data-nodeid]');
+            if(element){
+              var model = this.engine.getNode(element.dataset['nodeid']);
+              this.engine.setSelectedNode(model);
+              this.setState({
+                selectedModel: model,
+                initialX: event.pageX,
+                initialY: event.pageY,
+                initialObjectX: model.x,
+                initialObjectY: model.y
+              });
+              return;
+            }
+
+            //probably just the canvas
             this.setState({
               initialX: event.pageX,
               initialY: event.pageY,
-              initialObjectX: point.x,
-              initialObjectY: point.y,
+              initialObjectX: this.engine.state.offsetX,
+              initialObjectY: this.engine.state.offsetY
             });
-            this.selectedPointID = element.dataset.id;
-            this.selectedLink = this.engine.getLink(element.dataset.linkid);
-            return
           }
-
-          //look for an element
-          element = event.target.closest('.node[data-nodeid]');
-          if(element){
-            var model = this.engine.getNode(element.dataset['nodeid']);
-            this.engine.setSelectedNode(model);
-            this.setState({
-              selectedModel: model,
-              initialX: event.pageX,
-              initialY: event.pageY,
-              initialObjectX: model.x,
-              initialObjectY: model.y
-            });
-            return;
-          }
-
-          //probably just the canvas
-          this.setState({
-            initialX: event.pageX,
-            initialY: event.pageY,
-            initialObjectX: this.engine.state.offsetX,
-            initialObjectY: this.engine.state.offsetY
-          });
         },
         onMouseUp: function onMouseUp(event){
           var this$1 = this;
 
-          if(!this.selectedPointID) { this.resetState(); }
-          if(this.selectedPointID){
-            var point = this.engine.getPoint(this.selectedPointID);
-            var element = event.target.closest('.port[data-name]');
-            if(!element) { this.resetState(); }
-            if(element){
-              var nodeElement = event.target.closest('.node[data-nodeid]');
+          if (event.which === 1) {
+            if(!this.selectedPointID) { this.resetState(); }
+            if(this.selectedPointID){
+              var point = this.engine.getPoint(this.selectedPointID);
+              var element = event.target.closest('.port[data-name]');
+              if(!element) { this.resetState(); }
+              if(element){
+                var nodeElement = event.target.closest('.node[data-nodeid]');
 
-              //cant add link to self
-              if(this.selectedLink.source === nodeElement.dataset.nodeid){
-                this.engine.removeLink(this.selectedLink);
-              }
+                //cant add link to self
+                if(this.selectedLink.source === nodeElement.dataset.nodeid){
+                  this.engine.removeLink(this.selectedLink);
+                }
 
-              //do the merge
-              else {
+                //do the merge
+                else {
 
-                var nodeObject = this.engine.getNode(nodeElement.dataset.nodeid);
-                var NodeFactory = this.engine.getNodeFactory(nodeObject.type);
+                  var nodeObject = this.engine.getNode(nodeElement.dataset.nodeid);
+                  var NodeFactory = this.engine.getNodeFactory(nodeObject.type);
 
-                //check if the port is allowed by using the factory
-                var isPortAllowed = NodeFactory.isPortAllowed(
-                  this.engine.getNode(this.selectedLink.source),
-                  this.selectedLink.sourcePort,
-                  nodeObject,element.dataset.name);
+                  //check if the port is allowed by using the factory
+                  var isPortAllowed = NodeFactory.isPortAllowed(
+                    this.engine.getNode(this.selectedLink.source),
+                    this.selectedLink.sourcePort,
+                    nodeObject,element.dataset.name);
 
-                if (!isPortAllowed) { this.resetState(); }
-                if (isPortAllowed) {
+                  if (!isPortAllowed) { this.resetState(); }
+                  if (isPortAllowed) {
 
-                  this.engine.state.validators.onEdgeUpdate(this.selectedLink)
-                    .then(function (valid) {
-                      if (valid) {
-                        this$1.selectedLink.target = nodeElement.dataset.nodeid;
-                        this$1.selectedLink.targetPort = element.dataset.name;
-                        this$1.engine.repaintNodes([nodeObject]);
+                    this.engine.state.validators.onEdgeUpdate(this.selectedLink)
+                      .then(function (valid) {
+                        if (valid) {
+                          this$1.selectedLink.target = nodeElement.dataset.nodeid;
+                          this$1.selectedLink.targetPort = element.dataset.name;
+                          this$1.engine.repaintNodes([nodeObject]);
 
-                        this$1.engine.fireEvent({
-                          type:'link:update',
-                          data: this$1.selectedLink,
-                        });
-                      } else {
-                        //revert position
-                        point.x = this$1.initialObjectX || point.x + 100;
-                        point.y = this$1.initialObjectY || point.y + 100;
-                        console.log(point);
-                      }
-                      this$1.resetState();
-                    });
+                          this$1.engine.fireEvent({
+                            type:'link:update',
+                            data: this$1.selectedLink,
+                          });
+                        } else {
+                          //revert position
+                          point.x = this$1.initialObjectX || point.x + 100;
+                          point.y = this$1.initialObjectY || point.y + 100;
+                        }
+                        this$1.resetState();
+                      });
+                  }
                 }
               }
             }
@@ -5100,7 +5162,7 @@
     var _c = _vm._self._c || _h;
     return _c("div", {
       class: _vm.classes,
-      attrs: { "data-nodeid": _vm.node.id, "data-name": _vm.name },
+      attrs: { "data-nodeid": _vm.node.id, "data-name": _vm.name, "data-type": _vm.type },
       on: { mouseenter: _vm.onMouseEnter, mouseleave: _vm.onMouseLeave }
     })
   };
@@ -14237,6 +14299,7 @@
     },
     watch: {
       data: {
+        deep: true,
         handler: function handler() {
           this.initializeModel();
         }

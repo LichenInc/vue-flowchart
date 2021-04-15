@@ -228,7 +228,7 @@
                         //revert position
                         point.x = this.initialObjectX || point.x + 100
                         point.y = this.initialObjectY || point.y + 100
-                        console.log(point);
+                        // console.log(point);
                       }
                       this.resetState()
                     })

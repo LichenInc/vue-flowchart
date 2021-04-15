@@ -1,5 +1,5 @@
 <script>
-
+  import { v4 as uuidv4 } from 'uuid'
   import { merge } from 'lodash-es'
 
   export default {
@@ -131,7 +131,7 @@
 
   			paths.push(this.generateLink(h, {
           attrs: {
-            id: '0',
+            id: this.engine.UID(),
             d: ` M${this.getPoint(0).x} ${this.getPoint(0).y} C${this.getPoint(0).x + margin} ${this.getPoint(0).y} ${this.getPoint(1).x-margin} ${this.getPoint(1).y} ${this.getPoint(1).x} ${this.getPoint(1).y}`,
           },
           on: {
@@ -166,7 +166,7 @@
   			paths = ds.map((data,index) => {
   				return this.generateLink(h, {
             attrs: {
-              id:index,
+              id: this.engine.UID(),
     					'data-link': this.link.id,
     					'data-point': index,
               d: data,

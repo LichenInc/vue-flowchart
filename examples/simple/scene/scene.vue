@@ -56,11 +56,14 @@
           type: 'default',
           data: {
             name: "New node",
+            inPorts: ['in'], 
+            outPorts: ['out']
           },
           x: Math.random(5) * 100 ,
-          y: Math.random(5) * 100,
+          y: Math.random(5) * 100
         }
-        flowchart.addNode(node)
+        this.data.nodes.push(node)
+        // flowchart.addNode(node)
       },
       removeRandomNode() {
         const flowchart = this.$refs.flowchart
