@@ -1,6 +1,6 @@
 {
   "name": "@gcorbel_4/vueflowchart",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "vueflowchart",
   "main": "dist/vueflowchart.js",
   "module": "dist/vueflowchart.esm.js",
