@@ -10,6 +10,7 @@
     },
     props: {
       name: { default: 'Node' },
+      type: { default: null },
 			node: {},
 			inPorts: { default: () => [] },
 			outPorts: { default: () => [] },
@@ -61,8 +62,13 @@
 
   <div class="basic-node" :style="{ backgroundColor: color }">
     <div class="title">
-      <div class="name">
-        {{ name }}
+      <div class="name-wrapper">
+        <div class="name">
+          {{ name }}
+        </div>
+        <div class="subtitle" v-if='type'>
+          {{ type }}
+        </div>
       </div>
       <div class="fa fa-close" @click="removeAction"></div>
     </div>
