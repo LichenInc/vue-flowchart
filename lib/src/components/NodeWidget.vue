@@ -30,7 +30,18 @@
         }
       },
       classes() {
-        return 'node'+ (this.engine.state.selectedNode && this.engine.state.selectedNode.id == this.node.id ? ' selected' : '')
+        const linksNode = this.engine.getNodeLinks(this.node)
+        let gotEnteringLinks = false
+        let gotOuterLinks = false
+        if (linksNode.length > 0) {
+          if (linksNode.filter(e => e.source === this.node.id).length > 0) {
+            gotEnteringLinks = true
+          }
+          if (linksNode.filter(e => e.target === this.node.id).length > 0) {
+            gotOuterLinks = true
+          }
+        }
+        return 'node'+ (this.engine.state.selectedNode && this.engine.state.selectedNode.id == this.node.id ? ' selected' : '') + (gotEnteringLinks ? ' inner-link-active' : '') + (gotOuterLinks ? ' outer-link-active' : '')
       },
     },
   }

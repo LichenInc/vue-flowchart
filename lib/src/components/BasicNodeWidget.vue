@@ -52,7 +52,7 @@
       },
       formattedOutPorts() {
         return Array.isArray(this.outPorts) ? this.outPorts : [this.outPorts]
-      },
+      }
     },
   }
 
